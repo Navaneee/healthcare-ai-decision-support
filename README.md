@@ -126,7 +126,8 @@ medical_analysis/
 2. Reviewer opens Streamlit review page
 3. Reviews all 4 agent outputs
 4. Approves or rejects with notes
-5. Rejection triggers automatic re-run with feedback
+5. 
+6. Rejection triggers automatic re-run with feedback
 
 ## 👤 Author
-Your Name
+Navaneetha K J
