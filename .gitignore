@@ -19,7 +19,7 @@ __pycache__/
 *.pyd
 
 # Guideline PDFs (large files)
-guidelines/
+# guidelines/
 
 # Ollama models
 *.bin
