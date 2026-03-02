@@ -1,0 +1,118 @@
+medical_report_extraction_task:
+  description: >
+    Analyze the provided medical report and extract the following health indicators:
+    - Age
+    - Blood Pressure (systolic/diastolic)
+    - Glucose level (mg/dL)
+    - Total Cholesterol (mg/dL)
+
+    Flag abnormal values using these thresholds:
+    - Blood Pressure > 140/90
+    - Glucose > 140 mg/dL
+    - Cholesterol > 200 mg/dL
+
+    Respond with raw JSON only. No explanation, no markdown, no extra text.
+
+    Medical Report:
+    {report_text}
+  expected_output: >
+    A raw JSON object containing extracted health indicators and abnormal flags.
+    Example format:
+    {
+      "age": 45,
+      "blood_pressure": "150/95",
+      "blood_pressure_flag": "High",
+      "glucose": 160,
+      "glucose_flag": "High",
+      "cholesterol": 210,
+      "cholesterol_flag": "High"
+    }
+  agent: report_analyzer
+
+
+guideline_retrieval_task:
+  description: >
+    You will receive structured patient health data from the previous task.
+
+    Based on the extracted health indicators and any flagged abnormal values,
+    use the Medical Guideline Retriever tool to retrieve relevant evidence-based
+    clinical guidelines for each flagged condition.
+
+    Search guidelines for:
+    - hypertension (if blood pressure is flagged High)
+    - diabetes (if glucose is flagged High)
+    - cholesterol (if cholesterol is flagged High)
+
+    Only retrieve guidelines for flagged conditions.
+    Always use the Medical Guideline Retriever tool for each condition.
+
+    Respond with raw JSON only. No explanation, no markdown, no extra text.
+  expected_output: >
+    A raw JSON object containing guideline recommendations for each condition.
+    Example format:
+    {
+      "hypertension_guidelines": "Initiate lifestyle modifications and consider antihypertensive therapy.",
+      "diabetes_guidelines": "Monitor HbA1c, initiate metformin if confirmed diabetic.",
+      "cholesterol_guidelines": "Initiate statin therapy and dietary modifications."
+    }
+  agent: guideline_retriever
+  context:
+    - medical_report_extraction_task
+
+
+risk_assessment_task:
+  description: >
+    You will receive patient health data and clinical guidelines from previous tasks.
+
+    Using the extracted health indicators and the retrieved clinical guidelines,
+    determine the risk level (High, Moderate, or Low) for each flagged condition.
+    Provide a clear explanation for each risk level based on medical reasoning.
+
+    Respond with raw JSON only. No explanation, no markdown, no extra text.
+  expected_output: >
+    A raw JSON object containing condition-wise risk levels and explanations.
+    Example format:
+    {
+      "conditions": [
+        {
+          "condition": "Hypertension",
+          "risk_level": "High",
+          "explanation": "Blood pressure of 150/95 significantly exceeds the 140/90 threshold."
+        }
+      ]
+    }
+  agent: risk_explainer
+  context:
+    - medical_report_extraction_task
+    - guideline_retrieval_task
+
+
+safety_validation_task:
+  description: >
+    You will receive patient health data, clinical guidelines, and risk assessments
+    from the previous tasks.
+
+    Based on all the above, identify:
+    - Any safety concerns
+    - Conflicting recommendations
+    - Potential contraindications
+    - Recommendations for further clinical evaluation
+
+    Respond with raw JSON only. No explanation, no markdown, no extra text.
+  expected_output: >
+    A raw JSON object containing identified safety issues.
+    Example format:
+    {
+      "issues": [
+        {
+          "issue": "Concurrent high glucose and high blood pressure increases cardiovascular risk.",
+          "severity": "High",
+          "recommendation": "Immediate referral to cardiologist and endocrinologist."
+        }
+      ]
+    }
+  agent: safety_validator
+  context:
+    - medical_report_extraction_task
+    - guideline_retrieval_task
+    - risk_assessment_task

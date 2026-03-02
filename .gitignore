@@ -1,0 +1,33 @@
+# Virtual environments
+venv/
+.venv/
+
+# Database files
+database/medical_reviews.db
+
+# ChromaDB (large vector files)
+chroma_db/
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Guideline PDFs (large files)
+guidelines/
+
+# Ollama models
+*.bin
+*.gguf
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
